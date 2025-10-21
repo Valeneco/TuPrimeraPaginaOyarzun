@@ -11,24 +11,7 @@
         <form method="POST">
             {% csrf_token %}
             
-            <div class="row g-3">
-                
-                <div class="col-12 mb-3">
-                    <label for="{{ form.name.id_for_label }}" class="form-label">Customer Name</label>
-                    {{ form.name }}
-                </div>
-
-                <div class="col-12 mb-3">
-                    <label for="{{ form.address.id_for_label }}" class="form-label">Address</label>
-                    {{ form.address }}
-                </div>
-
-                <div class="col-12 mb-3">
-                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
-                    {{ form.email }}
-                </div>
-                
-                </div>
+            {{ form.as_p }}
             
             <div class="text-center mt-4 gap-2 d-grid d-md-block">
                 <a href="{% url 'index' %}" class="btn btn-secondary px-4">
@@ -41,19 +24,4 @@
     </div>
 </div>
 
-<style>
-    /* Estilos para asegurar que los campos renderizados manualmente se vean como form-control de Bootstrap */
-    #id_name, #id_address, #id_email { 
-        width: 100%;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #495057;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-</style>
 {% endblock contenido %}

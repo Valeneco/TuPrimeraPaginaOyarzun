@@ -5,6 +5,7 @@ from django.db.models import Q, Count, Avg, F, ExpressionWrapper, DurationField
 from django.db.models.functions import ExtractMonth, ExtractYear
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from Finance.forms import *
 
 
 # VISTAS BASE
@@ -92,10 +93,10 @@ def add_vendor(request):
         form = VendorForm(request.POST) 
         if form.is_valid():
             form.save()
-            return redirect('index') 
+            return redirect("index") 
     else:
         form = VendorForm()
-    # Finance/views.py
+    return render(request, "Finance/vendor_form.html", {'form': form})
 
 from django.shortcuts import render, redirect # << Asegúrate de importar 'redirect'
 from .forms import VendorForm 
