@@ -1,28 +1,22 @@
-{% extends "Finance/index.html" %}
+{% extends 'base.html' %}
 
-{% block titulo %} Pending AR Invoices {% endblock %}
+{% block title %}Pending AR Invoices{% endblock %}
 
-{% block contenido %}
+{% block content %}
 <div class="container my-5">
-    <h1 class="mb-4 text-primary text-center">Pending Accounts Receivable (AR) Invoices</h1>
-    <p class="lead text-center text-muted">Invoices with 'Pending' status are ready for synchronization.</p>
-    
-    <div class="d-flex justify-content-center gap-2 mb-4">
-        
-        <a href="{% url 'index' %}" class="btn btn-secondary px-4">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        
-        <a href="{% url 'add_customer_invoice' %}" class="btn btn-blue-primary">
-            ➕ Create New AR Invoice
-        </a>
+    <h1 class="text-center mb-4 text-primary">Pending Accounts Receivable (AR) Invoices</h1>
+    <p class="text-center text-muted mb-4">Invoices with 'Pending' status are ready for synchronization.</p>
+
+    <div class="text-center mb-4">
+        <a href="{% url 'index' %}" class="btn btn-secondary me-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <a href="{% url 'add_customer_invoice' %}" class="btn btn-blue-primary">➕ Create New AR Invoice</a>
     </div>
 
     <div class="card shadow-sm p-4">
         {% if invoices %}
         <div class="table-responsive">
             <table class="table table-striped table-hover">
-                <thead class="table-light">
+                <thead class="table-primary">
                     <tr>
                         <th>Invoice Number</th>
                         <th>Customer</th>
@@ -36,12 +30,12 @@
                     {% for invoice in invoices %}
                     <tr>
                         <td>{{ invoice.invoice_number }}</td>
-                        <td>{{ invoice.customer.name }}</td> {# Assuming the Customer model has a 'name' field #}
+                        <td>{{ invoice.customer.name }}</td>
                         <td>${{ invoice.amount|floatformat:2 }}</td>
                         <td>{{ invoice.due_date|date:"Y-m-d" }}</td>
                         <td><span class="badge bg-warning text-dark">{{ invoice.status }}</span></td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-outline-info">View</a> 
+                            <a href="#" class="btn btn-sm btn-outline-info">View</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -49,10 +43,10 @@
             </table>
         </div>
         {% else %}
-        <div class="alert alert-info text-center" role="alert">
+        <div class="alert alert-info text-center">
             No pending invoices found. Add a new one to start synchronization!
         </div>
         {% endif %}
     </div>
 </div>
-{% endblock contenido %}
+{% endblock content %}

@@ -1,27 +1,22 @@
-{% extends "Finance/index.html" %}
+{% extends 'base.html' %}
 
 {% block titulo %} Add New Vendor {% endblock %}
 
 {% block contenido %}
-<div class="container my-5">
-    <h2 class="mb-4 text-center text-primary"> Add New Vendor </h2>
+<div class="container">
+    <h2 class="text-center mb-4">Add New Vendor</h2>
     <p class="text-center text-muted">Enter the details for a new vendor in the Accounts Payable (AP) Master.</p>
 
-    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+    <div class="container" style="max-width: 600px; padding: 20px; border: 1px solid #007bff; border-radius: 10px; background-color: #f0f8ff; margin: 0 auto;">
         <form method="POST">
             {% csrf_token %}
-            
             {{ form.as_p }}
-            
-            <div class="text-center mt-4 gap-2 d-grid d-md-block">
-                <a href="{% url 'index' %}" class="btn btn-secondary px-4">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
-                </a>
-                
-                <button type="submit" class="btn btn-primary px-4"> Save Vendor </button>
+
+            <div style="text-align:center; margin-top:20px;">
+                <a href="{% url 'index' %}" class="btn">← Back to Dashboard</a>
+                <button type="submit" class="btn">Save Vendor</button>
             </div>
         </form>
     </div>
 </div>
-
 {% endblock contenido %}

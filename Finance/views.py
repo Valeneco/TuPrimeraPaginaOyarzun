@@ -29,8 +29,14 @@ def add_customer_invoice(request):
     if request.method == "POST":
         form = CustomerInvoiceForm(request.POST)
         if form.is_valid():
-            form.save()
+            invoice = form.save(commit=False)
+            invoice.date_issued = date.today() 
+            invoice.save()
             return redirect("invoice_list") 
+        else:
+            print("❌ ERROR EN FORMULARIO:")
+            print(form.errors)
+
     else:
         form = CustomerInvoiceForm()
     return render(request, "Finance/customer_invoice_form.html", {'form': form, 'page_title': 'Añadir Factura de Cliente (AR)'})

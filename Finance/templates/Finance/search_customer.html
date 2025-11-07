@@ -1,11 +1,11 @@
-{% extends "Finance/index.html" %}
+{% extends 'base.html' %}
 
-{% block titulo %} Buscar Clientes {% endblock %}
+{% block title %}Buscar Clientes{% endblock %}
 
-{% block contenido %}
+{% block content %}
 <div class="container my-5">
-    <h2 class="mb-4 text-center">{{ page_title }}</h2>
-    
+    <h2 class="mb-4 text-center text-primary">{{ page_title }}</h2>
+
     <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
         <form method="GET" action="{% url 'search_customers' %}" class="mb-4">
             <div class="input-group">
@@ -14,10 +14,10 @@
                        placeholder="Buscar por nombre o código de compañía..."
                        name="q" 
                        value="{{ query|default:'' }}">
-                <button type="submit" class="btn btn-primary">Buscar</button>
+                <button type="submit" class="btn btn-blue-primary">Buscar</button>
             </div>
         </form>
-        
+
         {% if query and customers %}
             <h5 class="mt-4">Resultados para "{{ query }}":</h5>
             <ul class="list-group">
@@ -29,10 +29,10 @@
                 {% endfor %}
             </ul>
         {% elif query %}
-            <div class="alert alert-warning">No se encontraron clientes para "{{ query }}".</div>
+            <div class="alert alert-warning mt-2">No se encontraron clientes para "{{ query }}".</div>
         {% else %}
-            <div class="alert alert-info">Ingrese un término para buscar clientes.</div>
+            <div class="alert alert-info mt-2">Ingrese un término para buscar clientes.</div>
         {% endif %}
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

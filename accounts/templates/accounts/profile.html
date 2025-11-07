@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Profile - {{ user.username }}</h2>
+    <p>Type: {{ user.get_user_type_display }}</p>
+
+    <!-- Foto de perfil -->
+    <div style="margin-bottom: 20px;">
+        {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" width="150" class="rounded-circle">
+        {% else %}
+            <img src="{% static 'default_avatar.png' %}" alt="Default avatar" width="150" class="rounded-circle">
+        {% endif %}
+    </div>
+
+    <div>
+        {% if user.user_type == 'C' %}
+            <a href="{% url 'add_customer_invoice' %}" class="btn btn-primary">Create Customer Invoice</a>
+            <a href="{% url 'invoice_list' %}" class="btn btn-secondary">View My Invoices</a>
+        {% elif user.user_type == 'V' %}
+            <a href="{% url 'add_vendor_invoice' %}" class="btn btn-primary">Create Vendor Invoice</a>
+            <a href="{% url 'vendor_payment_list' %}" class="btn btn-secondary">View My Invoices</a>
+        {% endif %}
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        <a href="{% url 'edit_profile' %}" class="btn btn-warning">Edit Profile</a>
+    </div>
+
+    <h3 class="mt-4">My Invoices</h3>
+
+    <form method="get" style="margin-bottom: 15px;">
+        <label for="status_filter">Filter by Status:</label>
+        <select name="status" id="status_filter" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="OUTSTANDING" {% if filter_status == "OUTSTANDING" %}selected{% endif %}>Outstanding</option>
+            <option value="PAID" {% if filter_status == "PAID" %}selected{% endif %}>Paid</option>
+            <option value="OVERDUE" {% if filter_status == "OVERDUE" %}selected{% endif %}>Overdue</option>
+            <option value="IN_TRANSIT" {% if filter_status == "IN_TRANSIT" %}selected{% endif %}>In Transit</option>
+            <option value="PROCESSED" {% if filter_status == "PROCESSED" %}selected{% endif %}>Processed</option>
+        </select>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Invoice Number</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if invoices %}
+                {% for invoice in invoices %}
+                <tr>
+                    <td>{{ invoice.invoice_number }}</td>
+                    <td>{{ invoice.date_issued }}</td>
+                    <td>{{ invoice.due_date }}</td>
+                    <td>${{ invoice.amount|floatformat:2 }}</td>
+                    <td>{{ invoice.status }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="5" class="text-center">No invoices yet.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome | Finance App{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="hero text-center p-5 bg-gradient rounded-4 shadow-sm">
+        <h1 class="display-4 fw-bold text-white">Welcome to Finance App</h1>
+        <p class="lead text-light mt-3">
+            Your all-in-one dashboard for managing invoices, vendors, and customer data.
+        </p>
+        <a href="{% url 'home' %}" class="btn btn-lg btn-light mt-4">Go to Dashboard</a>
+    </div>
+
+    <!-- Quick Links Section -->
+    <div class="row justify-content-center g-4 mt-5">
+        <div class="col-lg-3 col-md-6">
+            <div class="card shadow-sm text-center p-4 hover-card">
+                <h5 class="text-primary mb-3">Accounts Receivable (AR)</h5>
+                <a href="{% url 'add_customer_invoice' %}" class="btn btn-primary mb-2">➕ Create Invoice</a>
+                <a href="{% url 'invoice_list' %}" class="btn btn-outline-primary mb-2">📋 View AR List</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card shadow-sm text-center p-4 hover-card">
+                <h5 class="text-danger mb-3">Accounts Payable (AP)</h5>
+                <a href="{% url 'add_vendor_invoice' %}" class="btn btn-danger mb-2">➕ Create Bill</a>
+                <a href="{% url 'vendor_payment_list' %}" class="btn btn-outline-danger mb-2">📋 View AP List</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card shadow-sm text-center p-4 hover-card">
+                <h5 class="text-success mb-3">Customers & Vendors</h5>
+                <a href="{% url 'add_customer' %}" class="btn btn-success mb-2">👤 Add Customer</a>
+                <a href="{% url 'add_vendor' %}" class="btn btn-outline-success mb-2">👥 Add Vendor</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero {
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+}
+
+.card {
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,123,255,0.2);
+}
+
+.btn-primary { background-color: #007bff; border-color: #007bff; color: white; }
+.btn-primary:hover { background-color: #0056b3; }
+
+.btn-danger { background-color: #dc3545; border-color: #dc3545; color: white; }
+.btn-danger:hover { background-color: #a71d2a; }
+
+.btn-success { background-color: #28a745; border-color: #28a745; color: white; }
+.btn-success:hover { background-color: #1c7430; }
+
+.btn-outline-primary, .btn-outline-danger, .btn-outline-success {
+    color: inherit;
+}
+</style>
+{% endblock content %}
