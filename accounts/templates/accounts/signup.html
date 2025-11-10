@@ -3,15 +3,66 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Create Account</h2>
+<div class="container my-5" style="max-width: 600px;">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4 text-center">Create Account</h2>
 
-    <form method="post" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn">Sign Up</button>
-    </form>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
 
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+            {# Ocultar user_type si ya viene definido (desde query param) #}
+            {% if request.GET.user_type %}
+                <input type="hidden" name="user_type" value="{{ request.GET.user_type }}">
+            {% else %}
+                <div class="mb-3">
+                    {{ form.user_type.label_tag }}
+                    {{ form.user_type }}
+                </div>
+            {% endif %}
+
+            <div class="mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+            </div>
+            <div class="mb-3">
+                {{ form.first_name.label_tag }}
+                {{ form.first_name }}
+            </div>
+            <div class="mb-3">
+                {{ form.last_name.label_tag }}
+                {{ form.last_name }}
+            </div>
+            <div class="mb-3">
+                {{ form.avatar.label_tag }}
+                {{ form.avatar }}
+            </div>
+            <div class="mb-3">
+                {{ form.bio.label_tag }}
+                {{ form.bio }}
+            </div>
+            <div class="mb-3">
+                {{ form.birth_date.label_tag }}
+                {{ form.birth_date }}
+            </div>
+            <div class="mb-3">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+            </div>
+            <div class="mb-3">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>
+        </form>
+
+        <p class="text-center mt-3">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </p>
+    </div>
 </div>
 {% endblock %}

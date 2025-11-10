@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
-{% block titulo %}{{ page_title }}{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
-{% block contenido %}
+{% block content %}
 <div class="container">
     <h2 class="text-center mb-4 text-danger">{{ page_title }}</h2>
     <p class="text-center text-muted">Enter Accounts Payable (AP) bills for control in Bill.com.</p>
@@ -33,16 +33,32 @@
                 </div>
             </div>
 
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                <div style="flex: 1 1 45%;">
+                    <label for="{{ form.date_issued.id_for_label }}">Date Issued</label>
+                    {{ form.date_issued }}
+                </div>
+                <div style="flex: 1 1 45%;">
+                    <label for="{{ form.payment_method.id_for_label }}">Payment Method</label>
+                    {{ form.payment_method }}
+                </div>
+            </div>
+
             <div style="margin-bottom: 15px;">
                 <label for="{{ form.status.id_for_label }}">Status</label>
                 {{ form.status }}
             </div>
 
+            <div style="margin-bottom: 15px;">
+                <label for="{{ form.notes.id_for_label }}">Notes</label>
+                {{ form.notes }}
+            </div>
+
             <div style="text-align:center; margin-top:20px;">
-                <a href="{% url 'index' %}" class="btn">← Back to Dashboard</a>
+                <a href="{% url 'profile' %}" class="btn">← Back to Profile</a>
                 <button type="submit" class="btn">Save AP Bill</button>
             </div>
         </form>
     </div>
 </div>
-{% endblock contenido %}
+{% endblock content %}

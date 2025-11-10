@@ -17,8 +17,15 @@
         {% endif %}
     </div>
 
+    <!-- Botones de acciones según tipo de usuario -->
     <div>
-        {% if user.user_type == 'C' %}
+        {% if user.is_superuser %}
+            <!-- Admin: Alternar entre AR y AP -->
+            <div style="margin-bottom: 20px;">
+                <a href="?view=AR" class="btn {% if view_type != 'AP' %}btn-primary{% else %}btn-secondary{% endif %}">Pending AR List</a>
+                <a href="?view=AP" class="btn {% if view_type == 'AP' %}btn-primary{% else %}btn-secondary{% endif %}">Pending AP Payments</a>
+            </div>
+        {% elif user.user_type == 'C' %}
             <a href="{% url 'add_customer_invoice' %}" class="btn btn-primary">Create Customer Invoice</a>
             <a href="{% url 'invoice_list' %}" class="btn btn-secondary">View My Invoices</a>
         {% elif user.user_type == 'V' %}
@@ -29,9 +36,20 @@
         <a href="{% url 'edit_profile' %}" class="btn btn-warning">Edit Profile</a>
     </div>
 
-    <h3 class="mt-4">My Invoices</h3>
+    <!-- Título de la sección de invoices -->
+    <h3 class="mt-4">
+        {% if user.is_superuser %}
+            {% if view_type == 'AP' %}Pending AP Payments{% else %}Pending AR List{% endif %}
+        {% else %}
+            My Invoices
+        {% endif %}
+    </h3>
 
+    <!-- Filtro de status -->
     <form method="get" style="margin-bottom: 15px;">
+        {% if user.is_superuser %}
+            <input type="hidden" name="view" value="{{ view_type }}">
+        {% endif %}
         <label for="status_filter">Filter by Status:</label>
         <select name="status" id="status_filter" onchange="this.form.submit()">
             <option value="">All</option>
@@ -43,6 +61,7 @@
         </select>
     </form>
 
+    <!-- Tabla de invoices -->
     <table class="table table-striped">
         <thead>
             <tr>
@@ -70,4 +89,4 @@
         </tbody>
     </table>
 </div>
-{% endblock %}
+{% endblock content %}

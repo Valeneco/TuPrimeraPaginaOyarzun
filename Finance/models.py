@@ -1,6 +1,14 @@
 from django.db import models
+from django.conf import settings  # <-- para usar AUTH_USER_MODEL
 
 class Customer(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,  # <--- cambio aquí
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    
     COMPANY_CHOICES = [
         ('USPS', 'USPS'),
         ('PITTSBURG', 'Pittsburg'),
@@ -21,6 +29,13 @@ class Customer(models.Model):
 
 
 class Vendor(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,  # <--- cambio aquí
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    
     COMPANY_CHOICES = [
         ('USPS', 'USPS'),
         ('PITTSBURG', 'Pittsburg'),
@@ -40,10 +55,9 @@ class Vendor(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.company_code})"
-    
+
 
 class CustomerInvoice(models.Model):
-    # Cuentas por Cobrar (AR) - De Plunet a Bill.com
     STATUS_CHOICES = [
         ('OUTSTANDING', 'Outstanding'), 
         ('PAID', 'Paid'),               
@@ -57,7 +71,7 @@ class CustomerInvoice(models.Model):
     due_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='OUTSTANDING')
-    payment_date = models.DateField(null=True, blank=True) 
+    payment_date = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -65,8 +79,8 @@ class CustomerInvoice(models.Model):
     def __str__(self):
         return f"AR {self.invoice_number} - {self.customer.name}"
 
+
 class VendorInvoice(models.Model):
-    # Cuentas por Pagar (AP) - Gestionadas en Bill.com
     STATUS_CHOICES = [
         ('OUTSTANDING', 'Outstanding'),
         ('PAID', 'Paid'),

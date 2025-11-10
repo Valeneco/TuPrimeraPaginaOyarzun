@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
 
-{% block titulo %}{{ page_title }}{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
-{% block contenido %}
+{% block content %}
 <div class="container">
     <h2 class="text-center mb-4 text-danger">{{ page_title }}</h2>
-    <p class="text-center text-muted">Enter Accounts Payable (AP) bills for control in Bill.com.</p>
+    <p class="text-center text-muted">Enter Accounts Receivable (AR) invoices to be controlled in Bill.com.</p>
 
     <div class="container" style="max-width: 800px; padding: 20px; border: 1px solid #007bff; border-radius: 10px; background-color: #f0f8ff; margin: 0 auto;">
-        <form method="POST" action="{% url 'add_vendor_invoice' %}">
+        <form method="POST" action="{% url 'add_customer_invoice' %}">
             {% csrf_token %}
 
             <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
                 <div style="flex: 1 1 45%;">
-                    <label for="{{ form.vendor.id_for_label }}">Vendor</label>
-                    {{ form.vendor }}
+                    <label for="{{ form.customer.id_for_label }}">Customer</label>
+                    {{ form.customer }}
                 </div>
                 <div style="flex: 1 1 45%;">
-                    <label for="{{ form.invoice_number.id_for_label }}">Bill Number</label>
+                    <label for="{{ form.invoice_number.id_for_label }}">Invoice Number</label>
                     {{ form.invoice_number }}
                 </div>
             </div>
@@ -33,16 +33,32 @@
                 </div>
             </div>
 
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                <div style="flex: 1 1 45%;">
+                    <label for="{{ form.date_issued.id_for_label }}">Date Issued</label>
+                    {{ form.date_issued }}
+                </div>
+                <div style="flex: 1 1 45%;">
+                    <label for="{{ form.payment_date.id_for_label }}">Payment Date</label>
+                    {{ form.payment_date }}
+                </div>
+            </div>
+
             <div style="margin-bottom: 15px;">
                 <label for="{{ form.status.id_for_label }}">Status</label>
                 {{ form.status }}
             </div>
 
+            <div style="margin-bottom: 15px;">
+                <label for="{{ form.notes.id_for_label }}">Notes</label>
+                {{ form.notes }}
+            </div>
+
             <div style="text-align:center; margin-top:20px;">
-                <a href="{% url 'index' %}" class="btn">← Back to Dashboard</a>
-                <button type="submit" class="btn">Save AP Bill</button>
+                <a href="{% url 'profile' %}" class="btn">← Back to Profile</a>
+                <button type="submit" class="btn">Save AR Invoice</button>
             </div>
         </form>
     </div>
 </div>
-{% endblock contenido %}
+{% endblock content %}

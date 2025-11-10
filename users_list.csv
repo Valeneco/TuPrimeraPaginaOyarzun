@@ -1,0 +1,15 @@
+id,username,email,is_superuser,is_staff,last_login
+1,Valen,vale.oyarzun17@gmail.com,False,False,
+2,Valenbilling,vale.oyarzun17@gmail.com,False,False,
+3,Valinversora,billing_dept@languagest.com,False,False,2025-11-05 03:58:37.599720+00:00
+4,19027755,vale.oyarzun17@gmail.com,False,False,2025-11-07 00:17:45.671210+00:00
+5,JOJO,vale.oyarzun17@gmail.com,False,False,
+6,Navalen,billing_dept@languagest.com,False,False,2025-11-06 04:02:51.997056+00:00
+7,saneva,hugo.rizzi@languagest.com,False,False,2025-11-06 04:08:05.094740+00:00
+8,evaluna,Soledadlurgo@gmail.com,False,False,2025-11-06 04:12:18.584185+00:00
+9,moncholo,hugo.rizzi@languagest.com,False,False,
+10,Pela3,Pela3@languagest.com,False,False,2025-11-06 17:35:01.425438+00:00
+11,admin,admin@example.com,True,True,2025-11-07 00:28:42.071718+00:00
+12,Customer1,customer1@hmail.com,False,False,2025-11-07 00:21:05.688241+00:00
+13,Vendor1,vale.oyarzun17@gmail.com,False,False,2025-11-07 00:23:32.933245+00:00
+14,Vendor2,vendor2@gmail.com,False,False,2025-11-07 00:27:53.486531+00:00

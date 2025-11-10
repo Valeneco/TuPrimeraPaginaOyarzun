@@ -17,5 +17,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_user_type_display()})"
-
-

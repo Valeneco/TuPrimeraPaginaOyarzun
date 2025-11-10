@@ -3,18 +3,28 @@
 {% block titulo %} Add New Vendor {% endblock %}
 
 {% block contenido %}
-<div class="container">
+<div class="container my-5">
     <h2 class="text-center mb-4">Add New Vendor</h2>
-    <p class="text-center text-muted">Enter the details for a new vendor in the Accounts Payable (AP) Master.</p>
+    <p class="text-center text-muted">Enter the details for a new vendor and create a user account.</p>
 
-    <div class="container" style="max-width: 600px; padding: 20px; border: 1px solid #007bff; border-radius: 10px; background-color: #f0f8ff; margin: 0 auto;">
+    <div class="container p-4" style="max-width: 600px; border: 1px solid #007bff; border-radius: 10px; background-color: #f0f8ff; margin: 0 auto;">
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
 
-            <div style="text-align:center; margin-top:20px;">
-                <a href="{% url 'index' %}" class="btn">← Back to Dashboard</a>
-                <button type="submit" class="btn">Save Vendor</button>
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username</label>
+                {{ form.username }}
+            </div>
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Password</label>
+                {{ form.password }}
+            </div>
+
+            {{ form.as_p|safe }}  {# Renderiza el resto de campos del Vendor #}
+
+            <div class="text-center mt-4">
+                <a href="{% url 'index' %}" class="btn btn-secondary me-2">← Back to Dashboard</a>
+                <button type="submit" class="btn btn-primary">Save Vendor</button>
             </div>
         </form>
     </div>

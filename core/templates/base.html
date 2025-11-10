@@ -4,15 +4,14 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}My Site{% endblock %}</title>
-    <meta name="description" content="My website for invoices, customers, vendors, and profile management.">
+    <title>{% block title %}My Billing System{% endblock %}</title>
+    <meta name="description" content="Finance and billing management system for customers and vendors.">
     <meta name="keywords" content="Invoices, Customers, Vendors, Finance, Billing">
     <meta name="author" content="Your Company Name">
 
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
-        /* Tipografía y layout general */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -35,7 +34,7 @@
             text-decoration: underline;
         }
 
-        /* Mensajes de Django */
+        /* Django messages */
         .messages {
             list-style: none;
             padding: 0;
@@ -62,7 +61,6 @@
             border: 1px solid #bee5eb;
         }
 
-        /* Contenedor principal para formularios y dashboards */
         .container {
             max-width: 800px;
             margin: 30px auto;
@@ -72,7 +70,6 @@
             background-color: #f0f8ff;
         }
 
-        /* Botones */
         .btn {
             display: inline-block;
             margin: 5px 10px 5px 0;
@@ -88,7 +85,6 @@
             background-color: #0056b3;
         }
 
-        /* Tablas */
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -106,7 +102,6 @@
             background-color: #cce5ff;
         }
 
-        /* Botones de header (About / Contact) */
         .header-links {
             position: absolute;
             top: 10px;
@@ -149,7 +144,7 @@
     </main>
 
     <footer>
-        <p>&copy; {{ current_year|default:"2025" }} My Company. All rights reserved.</p>
+        <p>&copy; {{ current_year|default:"2025" }} Your Company. All rights reserved.</p>
     </footer>
 
     {% block extra_scripts %}{% endblock %}
