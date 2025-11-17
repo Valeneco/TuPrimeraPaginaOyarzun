@@ -20,6 +20,7 @@ urlpatterns = [
     path('search_vendors/', views.search_vendors, name='search_vendors'),
 
     # === ADMIN HOME PENDING LISTS ===
-    path('pending_ar/', views.pending_ar_list, name='pending_ar_list'),
-    path('pending_ap/', views.pending_ap_list, name='pending_ap_list'),
+    # Comentadas para desactivar dashboard propio
+    # path('pending_ar/', views.pending_ar_list, name='pending_ar_list'),
+    # path('pending_ap/', views.pending_ap_list, name='pending_ap_list'),
 ]

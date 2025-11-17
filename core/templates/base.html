@@ -9,7 +9,10 @@
     <meta name="keywords" content="Invoices, Customers, Vendors, Finance, Billing">
     <meta name="author" content="Your Company Name">
 
-    <!-- CSS -->
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         body {
@@ -18,20 +21,33 @@
             padding: 0;
             background-color: #f8f9fa;
         }
-        header, footer {
-            background-color: #f5f5f5;
-            padding: 10px 20px;
-            position: relative;
-        }
         main {
             padding: 20px;
         }
         a {
             text-decoration: none;
-            color: #007bff;
         }
-        a:hover {
-            text-decoration: underline;
+
+        /* Navbar personalizado azul oscuro */
+        .navbar-custom {
+            background-color: #001f3f; /* azul oscuro */
+        }
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link,
+        .navbar-custom .dropdown-item {
+            color: white;
+        }
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .dropdown-item:hover {
+            background-color: #004080;
+            color: white;
+        }
+        .btn-custom {
+            background-color: #001f3f;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #004080;
         }
 
         /* Django messages */
@@ -61,6 +77,7 @@
             border: 1px solid #bee5eb;
         }
 
+        /* Contenedor principal */
         .container {
             max-width: 800px;
             margin: 30px auto;
@@ -70,21 +87,7 @@
             background-color: #f0f8ff;
         }
 
-        .btn {
-            display: inline-block;
-            margin: 5px 10px 5px 0;
-            padding: 8px 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
+        /* Tabla */
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -102,36 +105,65 @@
             background-color: #cce5ff;
         }
 
-        .header-links {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-        .header-links a {
-            margin-left: 10px;
-            padding: 5px 10px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        .header-links a:hover {
-            background-color: #0056b3;
-        }
     </style>
 
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header>
-        <h1>{% block header %}My Billing System{% endblock %}</h1>
-        <div class="header-links">
-            <a href="{% url 'about' %}">About</a>
-            <a href="{% url 'contact' %}">Contact</a>
-        </div>
-    </header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">🚀 MyBilling</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <!-- Mostrar nombre del usuario y logout -->
+                        <li class="nav-item">
+                            <span class="nav-link">👤 {{ user.username }}</span>
+                        </li>
 
-    <main>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">🔓 Logout</a>
+                        </li>
+
+                        {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">👑 Admin</a>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                        <!-- Mostrar login y create account con query param -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">🔑 Login</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="createAccountDropdown" role="button" data-bs-toggle="dropdown">
+                                ✍️ Create Account
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="createAccountDropdown">
+                                <li><a class="dropdown-item" href="{% url 'signup' %}?user_type=C">👤 Customer</a></li>
+                                <li><a class="dropdown-item" href="{% url 'signup' %}?user_type=V">🏪 Vendor</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    <!-- Siempre visibles -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">ℹ️ About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">📞 Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mensajes -->
+    <main class="container mt-4">
         {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -143,9 +175,12 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
+    <footer class="text-center py-3 bg-light mt-4">
         <p>&copy; {{ current_year|default:"2025" }} Your Company. All rights reserved.</p>
     </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block extra_scripts %}{% endblock %}
 </body>
