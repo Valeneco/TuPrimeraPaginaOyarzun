@@ -1,19 +1,125 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block title %}Edit Profile{% endblock %}
 
-{% block content %}
-<div class="container">
-    <h2>Edit Profile</h2>
-    
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <h4>Change Password</h4>
-        {{ password_form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
-
-    <p><a href="{% url 'profile' %}">Back to Profile</a></p>
-</div>
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* CSS to hide the browser's default translated file button text and force 'Choose file' */
+.custom-file-input::-webkit-file-upload-button,
+.custom-file-input::file-selector-button {
+    visibility: hidden;
+    width: 0;
+    padding: 0;
+    margin: 0;
+}
+.custom-file-input {
+    overflow: hidden; /* Ensures original text is not visible */
+    padding-left: 0;
+    /* Ensure the file input takes up full width */
+    display: block;
+    width: 100%;
+}
+.custom-file-input::before {
+    content: 'Choose file'; /* Text displayed on the button */
+    display: inline-block;
+    background: #e9ecef; /* Light gray background */
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    font-weight: normal;
+    text-align: center;
+    color: #495057;
+}
+.custom-file-input:hover::before {
+    background: #e2e6ea;
+}
+/* Style for the text next to the file button (which the browser translates) */
+/* The text "No file selected" is handled by the browser. */
+</style>
 {% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-warning text-dark">
+                    <h1 class="h4 mb-0"><i class="fas fa-user-edit"></i> Edit Profile Information</h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Display Django messages if they exist -->
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                        
+                        <!-- Profile form fields (Personal data only) -->
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+                                
+                                {% if field.name == 'avatar' %}
+                                    <!-- Manual rendering for the avatar field with custom CSS class -->
+                                    {% if field.value %}
+                                        <div class="mb-2">
+                                            <p class="text-muted small mb-1">Current Avatar:</p>
+                                            <img src="{{ field.value.url }}" alt="Current Avatar" class="img-fluid rounded-circle border p-1" style="width: 80px; height: 80px; object-fit: cover;">
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Manual render of the avatar file input -->
+                                    <input type="file" 
+                                           name="{{ field.name }}" 
+                                           id="{{ field.id_for_label }}" 
+                                           class="form-control custom-file-input">
+                                
+                                    <!-- If file field allows clearing (Clear checkbox) -->
+                                    {% if field.field.widget.allow_clear %}
+                                        <div class="form-check mt-1">
+                                            <input type="checkbox" 
+                                                   name="{{ field.html_name }}-clear" 
+                                                   id="{{ field.id_for_label }}-clear" 
+                                                   class="form-check-input">
+                                            <label class="form-check-label" for="{{ field.id_for_label }}-clear">Clear</label>
+                                        </div>
+                                    {% endif %}
+
+                                {% else %}
+                                    <!-- Rendering para todos los demás inputs (date_of_birth, bio, first_name, etc.) -->
+                                    <!-- Esto usa la renderización estándar de Django para evitar TemplateSyntaxError -->
+                                    {{ field }}
+
+                                {% endif %}
+                                
+                                {% for error in field.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Profile
+                            </a>
+                            <button type="submit" class="btn btn-warning text-dark shadow-sm">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'accounts',
     'blog', 
     'ckeditor',
+    'messaging',
 ]
 
 MIDDLEWARE = [
@@ -89,9 +90,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Redirects after login/logout
-LOGIN_REDIRECT_URL = 'profile'    # redirige al perfil después del login
-LOGOUT_REDIRECT_URL = 'login'     # redirige al login después del logout
+# CORRECCIÓN PARA ROMPER EL BUCLE DE RECURSIÓN
+# El login redirige a esta nueva ruta intermedia, no a la raíz.
+LOGIN_REDIRECT_URL = 'dashboard_flow' 
+LOGOUT_REDIRECT_URL = 'login' 
+
+# URL para el Login
+LOGIN_URL = '/accounts/login/' 
 
 # Media (para avatares, imágenes de posts)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+APPEND_SLASH = True

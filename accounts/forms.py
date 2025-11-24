@@ -21,7 +21,7 @@ class CustomUserUpdateForm(forms.ModelForm):
     avatar = forms.ImageField(required=False)
     class Meta:
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'avatar']
+        fields = ['username', 'first_name', 'last_name', 'email', 'avatar', 'bio', 'birth_date']
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=150)

@@ -1,24 +1,26 @@
 from django.contrib import admin
 from django.urls import path, include
 from core import views as core_views
-from accounts import views as accounts_views  # ✅ importar login_view
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
-    # Página principal: login
-    path('', accounts_views.login_view, name='login'),
 
-    # Páginas estáticas / core
+    # Dashboard principal del administrador (raíz del sitio)
+    path('', core_views.home_view, name='admin_dashboard'),
+
+    # Ruta intermedia para manejar redirección post-login
+    path('dashboard-flow/', core_views.dashboard_flow_view, name='dashboard_flow'),
+
+    # Páginas estáticas
     path('about/', core_views.about, name='about'),
-    path('contact/', core_views.contact_view, name='contact'),  # ✅ Agregado para Contact Form
+    path('contact/', core_views.contact_view, name='contact'),
 
-    # URLs de apps
-    path('accounts/', include('accounts.urls')),  # login/signup/profile
-    path('finance/', include('Finance.urls')),   # todas las URLs de Finance
-    path('home/', core_views.home_view, name='home'),  # home.html accesible solo por admin
+    # Otras apps
+    path('accounts/', include('accounts.urls')),
+    path('finance/', include('Finance.urls')),
+    path('messages/', include('messaging.urls')),
 ]
 
 if settings.DEBUG:

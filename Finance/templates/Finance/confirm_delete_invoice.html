@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirm Delete - {{ invoice.invoice_number }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    {% with '' as party_name_temp and '' as type_label_temp %}
+    
+        {% if invoice_type == 'customer' %}
+            {% with invoice.customer.name as party_name_temp and 'Client (AR)' as type_label_temp %}
+            {% endwith %}
+        {% elif invoice_type == 'vendor' %}
+            {% with invoice.vendor.name as party_name_temp and 'Vendor (AP)' as type_label_temp %}
+            {% endwith %}
+        {% else %}
+            {% with 'N/A' as party_name_temp and 'Unknown Type' as type_label_temp %}
+            {% endwith %}
+        {% endif %}
+    
+        <h2>Confirm Deletion</h2>
+    
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">⚠️ Deletion Confirmation</h4>
+            
+            <p class="mb-2">Are you sure you want to **PERMANENTLY DELETE** the following invoice?</p>
+            
+            <ul class="list-unstyled">
+                <li><strong>Number:</strong> {{ invoice.invoice_number }}</li>
+                <li><strong>Type:</strong> {{ type_label_temp }}</li>
+                <li><strong>Involved Party:</strong> {{ party_name_temp }}</li>
+                <li><strong>Amount:</strong> ${{ invoice.amount|floatformat:2 }}</li>
+            </ul>
+            
+            <hr>
+            <p class="mb-0">This action **CANNOT BE UNDONE**.</p>
+        </div>
+    
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger me-2">Confirm Deletion</button>
+            <a href="{% url 'invoice_detail' pk=invoice.pk %}" class="btn btn-secondary">Cancel</a> 
+        </form>
+
+    {% endwith %}
+</div>
+{% endblock content %}

@@ -1,62 +1,83 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django import forms
-from .models import Page  # Modelo principal de páginas/posts
-from .forms import PageForm  # Formulario para crear/editar páginas
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Page
+from .forms import PageForm
 
-# -----------------------------
-# NUEVA VISTA: HOME / DASHBOARD
-# -----------------------------
+
+# 1. NUEVA VISTA: TARGET DE LOGIN_REDIRECT_URL
+@login_required
+def dashboard_flow_view(request):
+    """
+    Punto central después del login.
+    LOGIN_REDIRECT_URL = 'dashboard_flow'
+    Redirige según tipo de usuario.
+    """
+    user = request.user
+    
+    # Admin o staff → Dashboard Admin (ruta '/')
+    if user.user_type == 'A' or user.is_staff:
+        return redirect('admin_dashboard')   # <-- IMPORTANTE: YA NO 'home'
+    
+    # Clientes/Vendedores → Perfil
+    elif user.user_type in ['C', 'V']:
+        return redirect('profile')
+    
+    # Fallback
+    return redirect('login')
+
+
 @login_required
 def home_view(request):
     """
-    Vista principal del sitio (Home / Dashboard).
-    Redirige a profile.html para clientes/vendors.
-    Admin ve home.html con links de gestión.
+    Dashboard del administrador.
+    Solo Admins deben entrar aquí.
     """
     user = request.user
 
-    if user.user_type == 'A':
-        # Admin → mostrar home.html
-        return render(request, 'core/home.html', {'user': user})
-    elif user.user_type in ['C', 'V']:
-        # Customer o Vendor → redirigir a profile
+    # Si un C/V intenta acceder a '/', lo enviamos a su perfil
+    if user.user_type != 'A' and not user.is_staff:
         return redirect('profile')
-    else:
-        # Si hubiera un user_type desconocido → logout o mensaje
-        return redirect('login')
 
-# -----------------------------
-# VISTAS EXISTENTES DEL CORE
-# -----------------------------
+    # Render del home del admin
+    return render(request, 'core/home.html', {'user': user})
+
+
 def index(request):
     return render(request, 'base.html')
+
 
 def about(request):
     return render(request, 'core/about.html')
 
-def pages_list(request):
-    pages = Page.objects.all()
-    context = {'pages': pages}
-    return render(request, 'core/pages_list.html', context)
+
+class PagesListView(ListView):
+    model = Page
+    template_name = 'core/pages_list.html'
+    context_object_name = 'pages'
+
+pages_list = PagesListView.as_view()
+
 
 def pages_detail(request, pk):
     page = get_object_or_404(Page, pk=pk)
     context = {'page': page}
     return render(request, 'core/pages_detail.html', context)
 
-@login_required
-def pages_create(request):
-    if request.method == 'POST':
-        form = PageForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('pages_list')
-    else:
-        form = PageForm()
-    return render(request, 'core/pages_form.html', {'form': form})
+
+class PagesCreateView(LoginRequiredMixin, CreateView):
+    model = Page
+    form_class = PageForm
+    template_name = 'core/pages_form.html'
+    success_url = reverse_lazy('pages_list')
+
+pages_create = PagesCreateView.as_view()
+
 
 @login_required
 def pages_edit(request, pk):
@@ -70,6 +91,7 @@ def pages_edit(request, pk):
         form = PageForm(instance=page)
     return render(request, 'core/pages_form.html', {'form': form})
 
+
 @login_required
 def pages_delete(request, pk):
     page = get_object_or_404(Page, pk=pk)
@@ -78,28 +100,27 @@ def pages_delete(request, pk):
         return redirect('pages_list')
     return render(request, 'core/pages_confirm_delete.html', {'page': page})
 
-# -----------------------------
-# NUEVA VISTA: CONTACT / FORMULARIO
-# -----------------------------
+
 class ContactForm(forms.Form):
     name = forms.CharField(max_length=100, label="Your Name")
     email = forms.EmailField(label="Your Email")
     subject = forms.CharField(max_length=200)
     message = forms.CharField(widget=forms.Textarea)
 
+
 def contact_view(request):
     """
-    Formulario de contacto. Envía correo al admin (simulado) y muestra mensajes.
+    Formulario de contacto.
+    Envía un email y muestra un mensaje.
     """
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Enviar email (opcional: modificar destinatario)
             send_mail(
                 form.cleaned_data['subject'],
                 form.cleaned_data['message'],
                 form.cleaned_data['email'],
-                ['admin@example.com'],  # Cambiar por tu mail real
+                ['admin@example.com'],
                 fail_silently=True,
             )
             messages.success(request, "Message sent successfully!")

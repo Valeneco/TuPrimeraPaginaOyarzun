@@ -122,8 +122,16 @@
                     {% if user.is_authenticated %}
                         <!-- Mostrar nombre del usuario y logout -->
                         <li class="nav-item">
-                            <span class="nav-link">👤 {{ user.username }}</span>
+                            <a class="nav-link" href="{%url 'conversation_list'%}">
+                                <i class="fas fa-envelope"></i>Messages
+                            </a>
                         </li>
+                        
+                        <!-- 🌟 CAMBIO CLAVE: Ahora es un enlace a la URL 'profile' 🌟 -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">👤 {{ user.username }}</a>
+                        </li>
+                        <!-- 🌟 FIN DEL CAMBIO CLAVE 🌟 -->
 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">🔓 Logout</a>

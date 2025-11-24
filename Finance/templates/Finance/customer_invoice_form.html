@@ -7,8 +7,23 @@
     <h2 class="text-center mb-4 text-danger">{{ page_title }}</h2>
     <p class="text-center text-muted">Enter Accounts Receivable (AR) invoices to be controlled in Bill.com.</p>
 
+    {% if form.errors %}
+        <div class="alert alert-danger" role="alert" style="max-width: 800px; margin: 0 auto 20px;">
+            <strong>Error:</strong> Please correct the marked fields.
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p>{{ field.label }}: {{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="container" style="max-width: 800px; padding: 20px; border: 1px solid #007bff; border-radius: 10px; background-color: #f0f8ff; margin: 0 auto;">
-        <form method="POST" action="{% url 'add_customer_invoice' %}">
+        
+        <form method="POST"> 
             {% csrf_token %}
 
             <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
@@ -39,14 +54,13 @@
                     {{ form.date_issued }}
                 </div>
                 <div style="flex: 1 1 45%;">
-                    <label for="{{ form.payment_date.id_for_label }}">Payment Date</label>
+                    <label for="{{ form.status.id_for_label }}">Status</label>
+                    {{ form.status }}
+                </div>
+                <div style="flex: 1 1 45%;">
+                    <label for="{{ form.payment_date.id_for_label }}">Payment date</label>
                     {{ form.payment_date }}
                 </div>
-            </div>
-
-            <div style="margin-bottom: 15px;">
-                <label for="{{ form.status.id_for_label }}">Status</label>
-                {{ form.status }}
             </div>
 
             <div style="margin-bottom: 15px;">
@@ -56,7 +70,7 @@
 
             <div style="text-align:center; margin-top:20px;">
                 <a href="{% url 'profile' %}" class="btn">← Back to Profile</a>
-                <button type="submit" class="btn">Save AR Invoice</button>
+                <button type="submit" class="btn btn-primary">Save AR Invoice</button>
             </div>
         </form>
     </div>

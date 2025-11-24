@@ -14,6 +14,15 @@ urlpatterns = [
     path('add_vendor_invoice/', views.add_vendor_invoice, name='add_vendor_invoice'),
     path('invoices/', views.invoice_list, name='invoice_list'),
     path('vendors/', views.vendor_payment_list, name='vendor_payment_list'),
+    
+    # === DETALLE DE FACTURA (SOLUCIÓN DEL ERROR NoReverseMatch) ===
+    path('invoice/<int:pk>/', views.invoice_detail, name='invoice_detail'), 
+
+    # === CRUD - UPDATE & DELETE ===
+    path('invoice/<int:pk>/edit/', views.edit_customer_invoice, name='edit_customer_invoice'),
+    path('vendor_invoice/<int:pk>/edit/', views.edit_vendor_invoice, name='edit_vendor_invoice'),
+    path('invoice/<int:pk>/delete/', views.delete_customer_invoice, name='delete_customer_invoice'),
+    path('vendor_invoice/<int:pk>/delete/', views.delete_vendor_invoice, name='delete_vendor_invoice'),
 
     # === SEARCH VIEWS ===
     path('search_customers/', views.search_customers, name='search_customers'),

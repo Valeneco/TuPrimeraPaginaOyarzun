@@ -11,6 +11,10 @@ from datetime import date
 def login_view(request):
     list(messages.get_messages(request))
 
+    # Added: If already logged in, redirect to the dashboard flow
+    if request.user.is_authenticated:
+        return redirect('dashboard_flow')
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -26,7 +30,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f"Welcome {user.username} 👋")
-                return redirect('profile')
+                return redirect('dashboard_flow') 
             else:
                 messages.error(request, "Incorrect password.")
     else:
@@ -35,7 +39,7 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 def signup_view(request):
-    # Tomar tipo de usuario de query param si existe
+    # Get user type from query param if exists
     preselected_type = request.GET.get('user_type', 'C')
 
     if request.method == 'POST':
@@ -45,7 +49,7 @@ def signup_view(request):
             user.user_type = form.cleaned_data['user_type']
             user.save()
 
-            # Crear perfil asociado
+            # Create associated profile
             try:
                 if user.user_type == 'C':
                     customer = Customer.objects.create(
@@ -70,7 +74,7 @@ def signup_view(request):
             if authenticated_user:
                 login(request, authenticated_user)
                 messages.success(request, f"User created successfully! Welcome {authenticated_user.username} 👋")
-                return redirect('profile')
+                return redirect('dashboard_flow')
             else:
                 messages.error(request, "User created but could not log in. Please log in manually.")
                 return redirect('login')
@@ -79,7 +83,7 @@ def signup_view(request):
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
     else:
-        # Inicializar formulario con tipo de usuario preseleccionado
+        # Initialize form with preselected user type
         form = SignUpForm(initial={'user_type': preselected_type})
 
     return render(request, 'accounts/signup.html', {'form': form})
@@ -95,6 +99,10 @@ def profile_view(request):
     filter_status = request.GET.get('status')
     view_type = request.GET.get('view')
 
+    # Block direct Profile access for Admins, forcing flow through Home
+    if user.user_type == 'A':
+        return redirect('home') 
+
     invoices = []
 
     if user.is_superuser:
@@ -103,13 +111,19 @@ def profile_view(request):
         else:
             invoices = CustomerInvoice.objects.all()
     else:
-        if hasattr(user, 'customer_profile'):
+        # 🟢 CORRECCIÓN CLAVE: 
+        # 1. Usar user.user_type para decidir la rama.
+        # 2. Verificar que el objeto de perfil exista (no sea None) antes de acceder a las facturas.
+        if user.user_type == 'C' and user.customer_profile:
             invoices = user.customer_profile.customerinvoice_set.all()
-        elif hasattr(user, 'vendor_profile'):
+        
+        elif user.user_type == 'V' and user.vendor_profile:
             invoices = user.vendor_profile.vendorinvoice_set.all()
 
     if filter_status:
-        invoices = invoices.filter(status=filter_status.upper())
+        # Solo intentar filtrar si la variable 'invoices' contiene un QuerySet válido
+        if invoices:
+            invoices = invoices.filter(status=filter_status.upper())
 
     context = {
         'user': user,
@@ -121,21 +135,38 @@ def profile_view(request):
     }
     return render(request, 'accounts/profile.html', context)
 
+
+# VIEW 1: Update personal data (name, email, photo, etc.)
 @login_required
 def edit_profile_view(request):
     user = request.user
     if request.method == 'POST':
         form = CustomUserUpdateForm(request.POST, request.FILES, instance=user)
-        password_form = PasswordChangeForm(user, request.POST)
-        if form.is_valid() and (not request.POST.get('old_password') or password_form.is_valid()):
+        if form.is_valid():
             form.save()
-            if request.POST.get('old_password'):
-                password_form.save()
-                update_session_auth_hash(request, user)
             messages.success(request, "Profile updated successfully!")
             return redirect('profile')
     else:
         form = CustomUserUpdateForm(instance=user)
-        password_form = PasswordChangeForm(user)
 
-    return render(request, 'accounts/edit_profile.html', {'form': form, 'password_form': password_form})
+    return render(request, 'accounts/edit_profile.html', {'form': form})
+
+# VIEW 2: Change password (separate)
+@login_required
+def change_password_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            # IMPORTANT: Maintains the user's session after changing the password
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('profile')
+        else:
+            # Note: The form already shows errors, this is a general message
+            messages.error(request, 'Please correct the error below.') 
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    # Renders the separate change_password.html template
+    return render(request, 'accounts/change_password.html', {'form': form})

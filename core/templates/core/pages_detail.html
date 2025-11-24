@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            
+            <h1 class="mb-3">{{ page.title }}</h1>
+            <hr>
+            
+            <p class="text-muted">Last updated: {{ page.updated_at|date:"F j, Y" }}</p>
+
+            {% if page.image %}
+                <img src="{{ page.image.url }}" alt="{{ page.title }}" class="img-fluid mb-4 rounded shadow">
+            {% endif %}
+
+            <div class="page-content">
+                {{ page.content|safe }} 
+            </div>
+
+            <div class="mt-5 text-center">
+                {% if user.is_authenticated and user.user_type == 'A' %}
+                    <a href="{% url 'pages_edit' page.pk %}" class="btn btn-warning me-2">Edit Page</a>
+                    <a href="{% url 'pages_delete' page.pk %}" class="btn btn-danger">Delete Page</a>
+                {% endif %}
+                <a href="{% url 'pages_list' %}" class="btn btn-secondary ms-2">← Back to List</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
