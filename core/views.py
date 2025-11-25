@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect 
+from django.shortcuts import render, get_object_or_404, redirect  
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -22,7 +22,7 @@ def dashboard_flow_view(request):
     
     # Admin o staff → Dashboard Admin (ruta '/')
     if user.user_type == 'A' or user.is_staff:
-        return redirect('admin_dashboard')   # <-- IMPORTANTE: YA NO 'home'
+        return redirect('admin_dashboard')
     
     # Clientes/Vendedores → Perfil
     elif user.user_type in ['C', 'V']:
@@ -35,17 +35,17 @@ def dashboard_flow_view(request):
 @login_required
 def home_view(request):
     """
-    Dashboard del administrador.
-    Solo Admins deben entrar aquí.
+    Home principal.
+    En esta versión lo redirigimos directamente al Admin de Django.
     """
     user = request.user
 
-    # Si un C/V intenta acceder a '/', lo enviamos a su perfil
-    if user.user_type != 'A' and not user.is_staff:
-        return redirect('profile')
+    # Si es admin → directo al panel admin
+    if user.is_superuser or user.is_staff or user.user_type == 'A':
+        return redirect('/admin/')
 
-    # Render del home del admin
-    return render(request, 'core/home.html', {'user': user})
+    # Si NO es admin → que vaya a su perfil
+    return redirect('profile')
 
 
 def index(request):
