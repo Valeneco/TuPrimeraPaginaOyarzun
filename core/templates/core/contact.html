@@ -6,14 +6,17 @@
 <div class="container">
     <h2>Contact Us</h2>
 
-    {% if success_message %}
-        <p style="color:green;">{{ success_message }}</p>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color:green;">{{ message }}</p>
+        {% endfor %}
     {% endif %}
 
     <form method="post" novalidate>
         {% csrf_token %}
         <p>{{ form.name.label_tag }}<br>{{ form.name }}{{ form.name.errors }}</p>
         <p>{{ form.email.label_tag }}<br>{{ form.email }}{{ form.email.errors }}</p>
+        <p>{{ form.subject.label_tag }}<br>{{ form.subject }}{{ form.subject.errors }}</p>
         <p>{{ form.message.label_tag }}<br>{{ form.message }}{{ form.message.errors }}</p>
         <button type="submit" class="btn">Send</button>
     </form>

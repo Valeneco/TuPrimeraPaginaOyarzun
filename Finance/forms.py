@@ -1,95 +1,99 @@
 from django import forms
-from accounts.models import CustomUser as User 
-from .models import Customer, CustomerInvoice, Vendor, VendorInvoice
+from .models import CustomerInvoice, VendorInvoice, Customer, Vendor
 
-class CustomerUserForm(forms.ModelForm):
-    username = forms.CharField(max_length=150)
-    password = forms.CharField(widget=forms.PasswordInput)
-
-    class Meta:
-        model = Customer
-        exclude = ('user', 'created_at', 'updated_at')
-
-class VendorUserForm(forms.ModelForm):
-    username = forms.CharField(max_length=150)
-    password = forms.CharField(widget=forms.PasswordInput)
-
-    class Meta:
-        model = Vendor
-        exclude = ('user', 'payment_date','created_at', 'updated_at')
-
+# ===============================
+# CUSTOMER INVOICE FORM
+# ===============================
 class CustomerInvoiceForm(forms.ModelForm):
-    
+
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None) 
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
-        # 1. Deshabilitar el campo 'customer' si no es Staff
-        if 'customer' in self.fields and user and not user.is_staff:
-            self.fields['customer'].disabled = True
-            
-            if hasattr(user, 'customer_profile'):
-                self.fields['customer'].queryset = Customer.objects.filter(pk=user.customer_profile.pk)
+
+        # Si el usuario no es staff y tiene customer_profile
+        if user and not user.is_staff and hasattr(user, 'customer_profile'):
+            # Limitar el dropdown a sí mismo
+            self.fields['customer'].queryset = Customer.objects.filter(pk=user.customer_profile.pk)
+            self.fields['customer'].disabled = False
+            self.fields['customer'].initial = user.customer_profile
+
+        # Seguridad: bloquear el status si no es staff
+        if 'status' in self.fields and user and not user.is_staff:
+            self.fields['status'].disabled = True
 
     class Meta:
         model = CustomerInvoice
-        # Lo incluimos para poder deshabilitarlo.
         fields = [
-            'invoice_number', 
-            'customer', 
-            'due_date', 
-            'amount', 
+            'invoice_number',
+            'customer',
+            'due_date',
+            'amount',
             'notes',
             'status',
         ]
-        
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
         }
-        
-    # *** CORRECCIÓN CLAVE: Sobrescribir el clean_customer ***
+
     def clean_customer(self):
-        """Asegura que el valor del Customer se mantenga si el campo estaba deshabilitado."""
-        # Si el formulario está editando una instancia y el campo 'customer' no fue enviado
-        # (porque estaba deshabilitado/ignorado por el navegador), usa el valor original (self.instance.customer).
-        if self.instance and 'customer' in self.fields and self.fields['customer'].disabled:
-             return self.instance.customer
-             
-        # Si el campo no estaba deshabilitado o si fue enviado correctamente, usa el valor limpio.
-        return self.cleaned_data.get('customer')
+        """Asegura que siempre se retenga el customer correcto"""
+        if self.instance and 'customer' in self.fields and not self.fields['customer'].disabled:
+            return self.cleaned_data.get('customer')
+        return self.instance.customer
+
+    def clean_status(self):
+        """Protege el status si el usuario no es staff"""
+        if self.instance and 'status' in self.fields and self.fields['status'].disabled:
+            return self.instance.status
+        return self.cleaned_data.get('status')
 
 
+# ===============================
+# VENDOR INVOICE FORM
+# ===============================
 class VendorInvoiceForm(forms.ModelForm):
-    
+
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None) 
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
-        # 1. Deshabilitar el campo 'vendor' si no es Staff
-        if 'vendor' in self.fields and user and not user.is_staff:
-            self.fields['vendor'].disabled = True
-            if hasattr(user, 'vendor_profile'):
-                self.fields['vendor'].queryset = Vendor.objects.filter(pk=user.vendor_profile.pk)
+
+        # Si el usuario no es staff y tiene vendor_profile
+        if user and not user.is_staff and hasattr(user, 'vendor_profile'):
+            # Limitar el dropdown a sí mismo
+            self.fields['vendor'].queryset = Vendor.objects.filter(pk=user.vendor_profile.pk)
+            self.fields['vendor'].disabled = False
+            self.fields['vendor'].initial = user.vendor_profile
+        else:
+            # Staff puede ver todos los vendors
+            self.fields['vendor'].queryset = Vendor.objects.all()
+
+        # Seguridad: bloquear el status si no es staff
+        if 'status' in self.fields and user and not user.is_staff:
+            self.fields['status'].disabled = True
 
     class Meta:
         model = VendorInvoice
         fields = [
-            'invoice_number', 
-            'vendor', 
-            'due_date', 
-            'amount', 
+            'invoice_number',
+            'vendor',
+            'due_date',
+            'amount',
             'notes',
             'status'
-            # Agrega los campos que uses, excluyendo 'date_issued', 'created_at', etc.
         ]
-        
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
         }
-        
-    # *** CORRECCIÓN CLAVE: Sobrescribir el clean_vendor ***
+
     def clean_vendor(self):
-        """Asegura que el valor del Vendor se mantenga si el campo estaba deshabilitado."""
-        if self.instance and 'vendor' in self.fields and self.fields['vendor'].disabled:
-            return self.instance.vendor
-        return self.cleaned_data.get('vendor')
+        """Asegura que siempre haya un vendor seleccionado"""
+        vendor = self.cleaned_data.get('vendor')
+        if not vendor:
+            raise forms.ValidationError("Vendor is required.")
+        return vendor
+
+    def clean_status(self):
+        """Protege el status si el usuario no es staff"""
+        if self.instance and 'status' in self.fields and self.fields['status'].disabled:
+            return self.instance.status
+        return self.cleaned_data.get('status')

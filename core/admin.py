@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Page 
+from .models import ContactMessage
 
 # Clase personalizada para administrar el modelo Page
 class PageAdmin(admin.ModelAdmin):
@@ -33,3 +34,9 @@ class PageAdmin(admin.ModelAdmin):
 
 # Registrar el modelo Page con la clase de administración personalizada
 admin.site.register(Page, PageAdmin)
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'name', 'email', 'sent_at')
+    list_filter = ('sent_at',)
+    search_fields = ('name', 'email', 'subject', 'message')

@@ -103,3 +103,18 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 APPEND_SLASH = True
+
+# ==============================
+# Email settings para Contact Form
+# ==============================
+
+# Durante desarrollo: ver emails en consola
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Desde qué email se enviarán los mensajes
+DEFAULT_FROM_EMAIL = 'webmaster@localhost'
+
+# Lista de admins que recibirán los emails de contacto
+ADMINS = [
+    ('Admin', 'admin@example.com'),  # <-- reemplaza con tu email real
+]

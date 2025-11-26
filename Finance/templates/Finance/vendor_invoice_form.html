@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
 <div class="container">
     <h2 class="text-center mb-4 text-danger">{{ page_title }}</h2>
-    <p class="text-center text-muted">Enter Accounts Payable (AP) bills for control in Bill.com.</p>
+    <p class="text-center text-muted">Enter Accounts Payable (AP) bills for control.</p>
 
     <div class="container" style="max-width: 800px; padding: 20px; border: 1px solid #007bff; border-radius: 10px; background-color: #f0f8ff; margin: 0 auto;">
-        <form method="POST" action="{% url 'add_vendor_invoice' %}">
+        
+        <form method="POST" 
+            {% if form.instance.pk %}
+                action="{% url 'edit_vendor_invoice' pk=form.instance.pk %}"
+            {% else %}
+                action="{% url 'add_vendor_invoice' %}"
+            {% endif %}>
             {% csrf_token %}
 
             <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
@@ -33,17 +40,6 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
-                <div style="flex: 1 1 45%;">
-                    <label for="{{ form.date_issued.id_for_label }}">Date Issued</label>
-                    {{ form.date_issued }}
-                </div>
-                <div style="flex: 1 1 45%;">
-                    <label for="{{ form.payment_method.id_for_label }}">Payment Method</label>
-                    {{ form.payment_method }}
-                </div>
-            </div>
-
             <div style="margin-bottom: 15px;">
                 <label for="{{ form.status.id_for_label }}">Status</label>
                 {{ form.status }}
@@ -55,8 +51,10 @@
             </div>
 
             <div style="text-align:center; margin-top:20px;">
-                <a href="{% url 'profile' %}" class="btn">← Back to Profile</a>
-                <button type="submit" class="btn">Save AP Bill</button>
+                <a href="{% url 'profile' %}" class="btn btn-secondary">← Back to Profile</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if form.instance.pk %}Update AP Bill{% else %}Save AP Bill{% endif %}
+                </button>
             </div>
         </form>
     </div>

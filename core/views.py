@@ -6,9 +6,9 @@ from django import forms
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 from .models import Page
 from .forms import PageForm
-
 
 # 1. NUEVA VISTA: TARGET DE LOGIN_REDIRECT_URL
 @login_required
@@ -101,6 +101,10 @@ def pages_delete(request, pk):
     return render(request, 'core/pages_confirm_delete.html', {'page': page})
 
 
+# ==============================
+# FORMULARIO DE CONTACTO
+# ==============================
+
 class ContactForm(forms.Form):
     name = forms.CharField(max_length=100, label="Your Name")
     email = forms.EmailField(label="Your Email")
@@ -111,20 +115,24 @@ class ContactForm(forms.Form):
 def contact_view(request):
     """
     Formulario de contacto.
-    Envía un email y muestra un mensaje.
+    Envía un email a los admins y muestra un mensaje de éxito.
     """
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
+            # Enviar email a todos los admins configurados en settings.ADMINS
             send_mail(
-                form.cleaned_data['subject'],
-                form.cleaned_data['message'],
-                form.cleaned_data['email'],
-                ['admin@example.com'],
-                fail_silently=True,
+                subject=form.cleaned_data['subject'],        # Asunto
+                message=form.cleaned_data['message'],        # Cuerpo
+                from_email=form.cleaned_data['email'],       # Remitente
+                recipient_list=[admin_email for _, admin_email in settings.ADMINS],
+                fail_silently=False,
             )
+            # Mostrar mensaje de éxito
             messages.success(request, "Message sent successfully!")
+            # Redirigir al mismo form para limpiar los campos
             return redirect('contact')
     else:
         form = ContactForm()
+
     return render(request, 'core/contact.html', {'form': form})
